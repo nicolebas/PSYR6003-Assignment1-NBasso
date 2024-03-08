@@ -1,0 +1,101 @@
+---
+title: "PSYR6003-Assignment1-NBasso"
+author: "Nicole Basso"
+format: docx
+editor: visual
+---
+
+## Load Libraries Needed For Assignment
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(stats)
+library(skimr)
+library(car)
+```
+
+## Question 1
+
+## Load "Avengers" CSV file dataset, assigning it to object "avengers"
+
+## then previewing the dataset using "glimpse" for inspection of variables
+
+## Glimpse showed there was no Participant ID column included in the original dataset; adding an ID column "PID" at the beginning of the dataset to aid in Data Inspection & Cleaning
+
+```{r}
+avengers <- read.csv("avengers.csv") %>% 
+            glimpse() %>% 
+            mutate(PID = row_number(), .before = 1)
+```
+
+## Checking for unusual observations in the dataset for all columns except "PID": (1) Missing/Empty/String typos Values \[identified by "skim_tee"\]; (2) Outliers/Illogical negative or zero values \[IQR summary with "skim_tee"\]; (3) Duplicate Observations \[identified by "get_dupes"\]
+
+```{r}
+avengers %>% 
+  skim_tee(-PID) %>% 
+  get_dupes(-PID)
+```
+
+## Cleaning Character Variables
+
+## The three character variables should all have three unique strings and no empty values
+
+## superpower and died should only have options yes, no, or NA
+
+## north_south should have only options north, south, or NA
+
+## Assessing current strings for typos/empty cells are coercing them into labelled factors with only the above options under new object "clean.avengers"
+
+## labels will be the denoted options wherein "yes" and "north" correspond to "1", "no" and "south" correspond to "0", and missing values correspond to "NA"
+
+## Checking recode by looking at unique values for each as the first 6 rows of the dataset
+
+```{r}
+print(unique(avengers$superpower))
+print(unique(avengers$north_south))
+print(unique(avengers$died))
+
+clean.avengers <- mutate(avengers, 
+            superpower = Recode(avengers$superpower, 
+              "c('yes', '\"yes\"') = 'yes'; 'no' = 'no'; else = NA", as.factor = T, 
+              levels = c("yes", "no", NA)),
+            north_south = Recode(avengers$north_south, 
+                "'north' = 'north'; 'south' = 'south'; else = NA",  as.factor = T,
+                levels = c("north", "south", NA)),
+            died = Recode(avengers$died, 
+                "'yes'  =  'yes'; 'no' = 'no'; else = NA", as.factor = T, 
+                levels = c("yes", "no", NA)),
+            .keep = "all")
+
+print(unique(clean.avengers$superpower))
+print(unique(clean.avengers$north_south))
+print(unique(clean.avengers$died))
+
+head(clean.avengers)
+
+```
+
+
+## Subsetting rows with unusual values identified in the previous chunk into a new tibble called "sus" in order to manually inspect flagged rows
+
+## those with empty/missing values, extreme values, and/or negative values will be subsetted; no duplicate rows were found and thus code for duplication subsetting will not be written
+
+## extreme values are identified as 1.5xIQR in accordance with Tukey's Method
+
+```{r}
+
+sus <- clean.avengers %>% 
+            filter(if_any(where(is.numeric), ~ . <= 0))
+
+sus <- avengers %>% 
+          filter(!complete.cases(avengers), if_any(where(is.numeric), ~ . <= 0), 
+          if_any(where(is.numeric), ~ . <= 1.5*IQR()), if_any(where(is.numeric), ~ . >= 1.5*IQR(~ .)))
+
+```
+
+## Question 2
+
+## Subsetting the Data to Include only Complete clean cases
+
+
