@@ -5,7 +5,9 @@ format: docx
 editor: visual
 ---
 
+
 ## Load Libraries Needed For Assignment
+
 
 ```{r}
 
@@ -19,18 +21,22 @@ library(skimr)
 ```
 
 
+
 ## Question 1
 
 ## Load "Avengers" CSV file dataset, assigning it to object "avengers"
 
 ## then previewing the dataset using "glimpse" for inspection of variable types and names
 
+
 ```{r}
 avengers <- read.csv("avengers.csv") %>% 
             glimpse() 
 ```
 
+
 ## Glimpse showed there was no Participant ID column included in the original dataset; adding an ID column "PID" at the beginning of the dataset to aid in Data Inspection & Cleaning
+
 
 ```{r}
 
@@ -43,9 +49,11 @@ avengersID <- avengers %>%
 ```
 
 
+
 ##subsetting cases with missing values and opening the dataset to inspect cases & PIDs
 
 ## Looking at summary statistics to inspect for unusual values or cases in the data
+
 
 ```{r}
 
@@ -59,8 +67,10 @@ skim_tee(avengersID)
 ```
 
 
+
 ##Subsetting data to only include cleaned cases
 ##Participant 784 and 814 excluded for incomplete data
+
 ```{r}
 
 
@@ -69,9 +79,11 @@ clean.avengers <- filter(avengersID, PID != 784 & PID != 814)
 ```
 
 
+
 ##Question 2 
 ##Creating a custom variable called "CombatEffectiveness", representing the sum of agility
 ##using head to check that the variable computed correctly
+
 ```{r}
 
 
@@ -82,9 +94,11 @@ appended.avengers <- clean.avengers %>%
 head(appended.avengers)
 ```
 
+
 ##Question 3
 ## Creating a subsetted copy of the dataset in both .sav and .csv formats that only includes avengers that did not have a superpower and have died
 ## Then summarizing the newavengers dataset (M, SD, range) for the values combat effectivenesss, kills, and injuries for the overall sample and by battle location
+
 ```{r}
 
 
@@ -134,12 +148,14 @@ SummaryStats
 ```
 
 
+
 ##Question 8
 ## Power analysis for secondary analysis regarding superpowers and IQ
 ## Powering for a cohen's d of 1, 80% power, and an alpha of 0.05
 ##Two sided, two sample test
 
 ##Plotting a power curve to see if 80% power is optimal
+
 
 ```{r}
 
@@ -151,8 +167,10 @@ plot(Power8.ttest)
 
 
 ```
+
 ##Question 9
 #Estimating power required for an equivalence test in our secondary analyses following the same parameters as the t test
+
 
 ```{r}
 
@@ -161,8 +179,10 @@ Power9.EQ
 
 ```
 
+
 ##Question 10
 #Calculating the Cohen's d effect size using t-test results (test statistic 4.25; df = 810)
+
 ```{r}
 
 
@@ -170,3 +190,4 @@ Power9.EQ
 EffectSize.TTest <- t_to_d(4.25, 810, paired = F, ci = 0.95, alternative ="two.sided")
 EffectSize.TTest
 ```
+
